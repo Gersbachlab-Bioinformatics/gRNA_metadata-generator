@@ -1,14 +1,14 @@
 import sys
 import csv
-sam_file = sys.argv[2]
+
 output_file = sys.argv[1]
 
-# Input/output files
-input_csv = "/work/rr151/SamAIM2neuro_data/subtype_lib.csv"
-sam_file = "/work/rr151/SamAIM2neuro_data/SJR_subtype_lib_final.sam"
-gtf_file = "/work/rr151/SamAIM2neuro_data/gencode.v47.annotation.gtf"
-output_file = "/work/rr151/SamAIM2neuro_data/SJR_subtype_lib_final_metadata.tsv"
-output_fasta = '/work/rr151/SamAIM2neuro_data/SJR_subtype_lib_final.fasta'
+# Input/output files (Update with your paths)
+input_csv = "/work/rr151/SamAIM2neuro_data/mPA_CRISPRa_lib.csv"
+sam_file = "/work/rr151/SamAIM2neuro_data/mPA_CRISPRa_lib.sam"
+gtf_file = "/hpc/group/gersbachlab/Reference_Data/Gencode/vM25/gencode.vM25.annotation.gtf"  # mm10 GTF
+output_file = "/work/rr151/SamAIM2neuro_data/mPA_CRISPRa_lib_metadata_mm10.tsv"
+output_fasta = '/work/rr151/SamAIM2neuro_data/mPA_CRISPRa_lib_mm10.fasta'
 # Load guide sequences
 guides = {}
 with open(input_csv, 'r', newline='') as csvfile, open(output_fasta, 'w') as fastafile:
@@ -31,7 +31,7 @@ with open(gtf_file, "r") as f:
         chrom, _, feature_type, start, end, _, strand, _, attributes = parts
         if feature_type != "gene":
             continue
-        # Extract gene_id and gene_name from attributes field
+        # Parse GTF attributes
         attr_dict = {}
         for attr in attributes.strip().split(";"):
             if attr.strip():
@@ -43,7 +43,7 @@ with open(gtf_file, "r") as f:
         gene_name = attr_dict.get("gene_name", "").upper()
         if not gene_id or not gene_name:
             continue
-        # Determine TSS
+        # Calculate TSS
         start, end = int(start), int(end)
         if strand == "+":
             tss_start, tss_end = start, start + 1
